@@ -12,7 +12,7 @@ import { subscribeToMessages, addMessage, subscribeToCompany, updateCompanySetti
 import { generateAIResponse } from '../services/mockAI';
 import { generateAvatarVideo, GooeyVideoResponse } from '../services/gooey';
 import { speakText, stopSpeaking } from '../services/tts';
-// import { queryDocuments, upsertDocuments } from '../services/pinecone';
+import { queryDocuments, upsertDocuments } from '../services/pinecone';
 import { subscribeToCompanyMembers, addCompanyMemberToFirestore, removeCompanyMember, ensureCompanyOwner, CompanyMember } from '../services/companyMembers';
 import { extractTextFromPDF } from '../services/pdfParser';
 import { useAuth } from '../contexts/AuthContext';
@@ -114,15 +114,15 @@ export default function CompanyChat({ companyId }: CompanyChatProps) {
 
       let documentContext = '';
       try {
-        // const relevantDocs = await queryDocuments(companyId, userMessage, 5);
-        // if (relevantDocs.length > 0) {
-        //   documentContext = `\n\n[COMPANY KNOWLEDGE BASE - Retrieved from Vector Database]\n${relevantDocs.map((doc, i) =>
-        //     `Document ${i + 1} (Relevance: ${(doc.score * 100).toFixed(1)}%):\n${doc.text}\n---`
-        //   ).join('\n')}`;
-        //   console.log(`Retrieved ${relevantDocs.length} relevant documents from Pinecone for RAG`);
-        // } else {
-        //   console.log('No relevant documents found in Pinecone');
-        // }
+        const relevantDocs = await queryDocuments(companyId, userMessage, 5);
+        if (relevantDocs.length > 0) {
+          documentContext = `\n\n[COMPANY KNOWLEDGE BASE - Retrieved from Vector Database]\n${relevantDocs.map((doc, i) =>
+            `Document ${i + 1} (Relevance: ${(doc.score * 100).toFixed(1)}%):\n${doc.text}\n---`
+          ).join('\n')}`;
+          console.log(`Retrieved ${relevantDocs.length} relevant documents from Pinecone for RAG`);
+        } else {
+          console.log('No relevant documents found in Pinecone');
+        }
       } catch (error) {
         console.error('Pinecone query error:', error);
         if (companyDocuments.length > 0) {
@@ -417,19 +417,19 @@ export default function CompanyChat({ companyId }: CompanyChatProps) {
       const contentForRag = rawPdfContent || documentContent.trim();
 
       try {
-        // await upsertDocuments(companyId, [
-        //   {
-        //     id: docId,
-        //     text: `${documentTitle.trim()}\n\n${contentForRag}`,
-        //     metadata: {
-        //       title: documentTitle.trim(),
-        //       uploadedBy: 'current-user',
-        //       uploadedAt: new Date().toISOString(),
-        //       source: rawPdfContent ? 'pdf' : 'manual'
-        //     }
-        //   }
-        // ]);
-        // console.log('Document indexed to Pinecone successfully');
+        await upsertDocuments(companyId, [
+          {
+            id: docId,
+            text: `${documentTitle.trim()}\n\n${contentForRag}`,
+            metadata: {
+              title: documentTitle.trim(),
+              uploadedBy: 'current-user',
+              uploadedAt: new Date().toISOString(),
+              source: rawPdfContent ? 'pdf' : 'manual'
+            }
+          }
+        ]);
+        console.log('Document indexed to Pinecone successfully');
       } catch (pineconeError) {
         console.error('Failed to index to Pinecone:', pineconeError);
       }
