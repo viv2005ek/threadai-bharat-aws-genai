@@ -1,5 +1,4 @@
-import * as pdfjsLib from "pdfjs-dist/build/pdf";
-import "pdfjs-dist/build/pdf.worker.entry";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
 // Use jsdelivr CDN which works better with Vite
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
