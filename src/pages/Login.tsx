@@ -30,6 +30,18 @@ export default function Login() {
     }
   }
 
+  function handleQuickLogin() {
+    setEmail('viv2005ek@gmail.com');
+    setPassword('Test@123');
+    // Trigger login after setting credentials
+    setTimeout(() => {
+      const form = document.querySelector('form');
+      if (form) {
+        form.requestSubmit();
+      }
+    }, 100);
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col relative overflow-hidden">
       <AnimatedBackground />
@@ -129,6 +141,32 @@ export default function Login() {
               )}
             </motion.button>
           </form>
+
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-cyan-500/20"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-slate-950 text-slate-500">or</span>
+              </div>
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="button"
+              onClick={handleQuickLogin}
+              disabled={loading}
+              className="w-full mt-4 py-4 glass-effect border border-cyan-500/30 text-cyan-400 font-semibold rounded-xl hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed heading-font"
+            >
+              Quick Login (Demo)
+            </motion.button>
+
+            <p className="mt-3 text-center text-xs text-slate-500">
+              Use demo credentials (viv2005ek@gmail.com) to explore all features
+            </p>
+          </div>
 
           <p className="mt-8 text-center text-slate-400">
             Don't have an account?{' '}
